@@ -1,43 +1,79 @@
-import { StatsCards } from "@/components/dashboard/StatsCards";
-import { EntitySearch } from "@/components/dashboard/EntitySearch";
-import { NameMentionChart } from "@/components/dashboard/NameMentionChart";
-import { VisualizationTabs } from "@/components/dashboard/VisualizationTabs";
+"use client";
+
+import { useState } from "react";
+import { TopEntities } from "@/components/dashboard/TopEntities";
+import { StatsPanel } from "@/components/dashboard/StatsPanel";
 import { NetworkGraph } from "@/components/dashboard/NetworkGraph";
+import { DocTypeChart } from "@/components/dashboard/DocTypeChart";
+import { DocTypeHeatmap } from "@/components/dashboard/DocTypeHeatmap";
+import { SearchFilter } from "@/components/dashboard/SearchFilter";
 import { RedactionAnalysis } from "@/components/dashboard/RedactionAnalysis";
+import { EntitySearch } from "@/components/dashboard/EntitySearch";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
 
 export default function DashboardPage() {
+  const [selectedEntityId, setSelectedEntityId] = useState<string | null>(null);
+  const [selectedDocType, setSelectedDocType] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+
   return (
     <div className="mx-auto max-w-7xl space-y-6">
-      {/* Page heading */}
-      <div>
-        <h1 className="font-heading text-2xl font-bold text-foreground">
-          Epstein Files <span className="text-gold-gradient">Analysis</span>
-        </h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Named-entity extraction and document analysis from the DOJ Epstein
-          Library. Data sourced from publicly released documents under FOIA.
-        </p>
+      {/* ── Page heading + Search/Filter bar ─────────────────────── */}
+      <div className="space-y-4">
+        <div>
+          <h1 className="font-heading text-2xl font-bold text-foreground">
+            Epstein Files{" "}
+            <span className="text-gold-gradient">Analysis</span>
+          </h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Named-entity extraction and document analysis from the DOJ
+            Epstein Library. Data sourced from publicly released documents
+            under FOIA.
+          </p>
+        </div>
+        <SearchFilter
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          selectedDocType={selectedDocType}
+          onDocTypeChange={setSelectedDocType}
+        />
       </div>
 
-      {/* Stats overview */}
-      <ErrorBoundary fallbackTitle="Failed to load stats">
-        <StatsCards />
-      </ErrorBoundary>
+      {/* ── Above the Fold: Top Entities (60%) + Stats (40%) ────── */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[3fr_2fr]">
+        <ErrorBoundary fallbackTitle="Failed to load top entities">
+          <TopEntities
+            selectedEntityId={selectedEntityId}
+            onSelectEntity={setSelectedEntityId}
+            selectedDocType={selectedDocType}
+          />
+        </ErrorBoundary>
+        <ErrorBoundary fallbackTitle="Failed to load stats">
+          <StatsPanel />
+        </ErrorBoundary>
+      </div>
 
-      {/* Centerpiece — virtualized entity chart (full width) */}
-      <ErrorBoundary fallbackTitle="Failed to load entity chart">
-        <NameMentionChart />
-      </ErrorBoundary>
+      {/* ── Below the Fold ───────────────────────────────────────── */}
 
-      {/* Tabbed visualizations — Timeline / Document Types / Section Heatmap */}
-      <ErrorBoundary fallbackTitle="Failed to load visualizations">
-        <VisualizationTabs />
-      </ErrorBoundary>
-
-      {/* Network graph — full width */}
+      {/* Network Graph — full width */}
       <ErrorBoundary fallbackTitle="Failed to load network graph">
         <NetworkGraph />
+      </ErrorBoundary>
+
+      {/* Document Type Bar Chart — full width */}
+      <ErrorBoundary fallbackTitle="Failed to load document type chart">
+        <DocTypeChart
+          selectedDocType={selectedDocType}
+          onSelectDocType={setSelectedDocType}
+        />
+      </ErrorBoundary>
+
+      {/* Document Type Heatmap — full width */}
+      <ErrorBoundary fallbackTitle="Failed to load heatmap">
+        <DocTypeHeatmap
+          selectedEntityId={selectedEntityId}
+          selectedDocType={selectedDocType}
+        />
       </ErrorBoundary>
 
       {/* Redaction analysis */}
