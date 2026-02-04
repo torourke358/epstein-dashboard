@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(tree:*)",
+      "Bash(npx next build)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nRedesign dashboard: top entities, network graph, doc type chart, heatmap\n\nRestructure the dashboard to prioritize the most important data above\nthe fold. New layout puts a ranked Top Mentioned Names list \\(60%\\) and\nKey Stats panel \\(40%\\) at the top, with Network Graph, Document Type\nBar Chart, and Entity x Document Type Heatmap below.\n\nNew components:\n- TopEntities: ranked list with search, sort, click-to-highlight\n- StatsPanel: compact vertical metrics with refresh\n- DocTypeChart: color-coded bar chart of document types\n- DocTypeHeatmap: entity x doc_type matrix with color intensity\n- SearchFilter: global search box and doc type filter chips\n\nCross-component filtering: selecting an entity highlights it in the\nheatmap; selecting a doc type dims unrelated bars/columns.\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git push:*)"
+    ]
+  }
+}
